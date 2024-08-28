@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>评论区示例</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+        .comment-section {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .comment-box {
+            margin-bottom: 20px;
+        }
+        .comment-box textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .comment-box button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .comment-box button:hover {
+            background-color: #0056b3;
+        }
+        .comments {
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        .comment {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .comment p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="comment-section">
+        <div class="comment-box">
+            <textarea id="commentInput" placeholder="请输入你的评论..."></textarea>
+            <button onclick="addComment()">提交评论</button>
+        </div>
+        <div class="comments" id="commentsList">
+            <!-- 评论将显示在这里 -->
+        </div>
+    </div>
+
+    <script>
+        // Function to fetch and display comments from the server
+        function loadComments() {
+            fetch('/api/comments')
+                .then(response => response.json())
+                .then(data => {
+                    const commentsList = document.getElementById('commentsList');
+                    commentsList.innerHTML = '';
+                    data.forEach(comment => {
+                        const commentDiv = document.createElement('div');
+                        commentDiv.className = 'comment';
+                        commentDiv.innerHTML = '<p>' + comment.text + '</p>';
+                        commentsList.appendChild(commentDiv);
+                    });
+                });
+        }
+
+        // Function to add a new comment
+        function addComment() {
+            const commentInput = document.getElementById('commentInput');
+            const commentText = commentInput.value.trim();
+            commentInput.value = '';
+
+            if (commentText) {
+                fetch('/api/comments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: commentText })
+                })
+                .then(response => response.json())
+                .then(() => {
+                    loadComments(); // Reload comments after adding a new one
+                });
+            }
+        }
+
+        // Initial load of comments
+        loadComments();
+    </script>
+</body>
+</html>
