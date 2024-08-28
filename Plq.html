@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CSDN.specialwu</title>
+    <link type="text/css" rel="styleSheet" th:href="@{/css/main.css}" href="css/main.css" />
+	<link href="css/commentStyle.css" rel="stylesheet">
+	<link href="css/getSQLcomment.css" rel="stylesheet">
+</head>
+<body>
+<div class="containAll">
+<!--主体内容-->
+<div class="middle">
+    <!-- 文章部分 -->
+    <div class="middle-left">
+        <!--点击后放大-->
+        <div th:each="alltiltes:${articles}">
+        <a class="big" th:attr="href='show?id='+${alltiltes.articleId}">
+            <!--文本框：涉及文章图片、标题、等内容，这个部分不做主要阐述-->
+            <table  cellspacing="0" cellpadding="0" height="148" width="930" class="artitle"  >
+                <tr class="title-picture">
+                    <td rowspan="3" width="324" height="148">
+                        <img src="images/mofei.jpg" width="324" height="148"/>
+                    </td>
+                    <td colspan="3" bgcolor="#e8e5ff">
+                        <h1 th:text="${alltiltes.title}" th:name="title">ssss</h1>
+                    </td>
+                </tr>
+                <tr align="center">
+                    <td height="40" width="130" bgcolor="#99a7ff">
+                        浏览：<span th:text="${alltiltes.clickCount}">10</span>次
+					</td>	
+                    </td>
+					<td bgcolor="#b5c9ff">
+						 评论：<span th:text="${alltiltes.commentNumber}">10</span>条
+					</td>
+					<td width="260" bgcolor="#c6d1ff">
+						发表时间：<span th:text="${alltiltes.writeTime}" th:width="260">2020-10-05 17:45</span>
+					</td>
+                </tr>
+                <tr>
+                    <td th:switch="${alltiltes.typeId}"bgcolor="#eff3ff"  th:name="articleId" colspan="3">
+                        <span  th:case="1">类型1</span>
+                        <span  th:case="2">类型2</span>
+                        <span  th:case="3">类型3</span>
+                    </td>
+                </tr>
+            </table>
+        </a>
+        </div>
+    </div>
+    <!-- 评论部分 -->
+        <div class="middle-right">
+        <div class="commentBlock">
+            <header><span>评论</span></header>
+            <section>
+                <ul></ul>
+                <table th:each="comments:${articleComments}">
+                    <tr>
+                        <td colspan="2" align="center">
+                            <span th:text="${comments.commentsTime}">2020-09-9</span>
+                        </td>
+                    </tr>
+                    <tr height="20">
+                        <td class="gettouxiang">
+                            <img src="/comment/images/tou01.png" th:src="${comments.givePicture}" />
+                        </td>
+                        <td class="gettouScreenName" th:switch="${comments.giveScreenName}">
+                        <!-- 在点击评论后产生0-5之间的数字并存到数据库，从数据库里拿出来后再进行对照，根据需要可进行修改-->
+                            <span  th:case="0">这是一个网名</span>
+                            <span  th:case="1">孤狼</span>
+                            <span  th:case="2">似水流年</span>
+                            <span  th:case="3">冰与火</span>
+                            <span  th:case="4">皮卡丘的皮</span>
+                            <span  th:case="5">永恒的心</span>
+                        </td>
+                    </tr>
+                    <tr height="20">
+                        <td colspan="2" class="getContent">
+                            <h1 th:text="${comments.commentContent}">数据库来的评论</h1>
+                        </td>
+                    </tr>
+                </table>
+            </section>
+            <div class="post" align="center">
+                <form action="/manageComments/addComment" th:action="@{/manageComments/addComment}" method="post" th:object="${commentObject}" onsubmit="return trueFales()">
+                    <input class="writeCommentContent"id="writeContent" placeholder="内容（1-50个字符）" type="text">
+
+                    <input hidden id="writeContent1"  th:field="*{commentContent}" name="commentContent" type="text">
+                    <input hidden th:text="${giveArticleId}" th:field="*{articleId}" name="articleId" type="text">
+                    <input hidden  th:field="*{commentsTime}" id="getTime" name="commentsTime" type="text">
+                    <input hidden  th:field="*{givePicture}" id="getPicture"name="givePicture" type="text">
+                    <input hidden  th:field="*{giveScreenName}" id="getScreenName" name="giveScreenName" type="text">
+
+                    <canvas id="canvas" width="150px" height="50px"></canvas><br>
+                    <input id="givevalue" type="text" hidden>
+                    <span><font color="aqua">点击刷新验证码</font></span><br>
+                    <input id="checking" type="text">
+                    <input type="submit" class="btn" value="发布">
+                </form>
+            </div>
+        </div>
+</div>
+</body>
+<script src="js/check.js"></script>
+<script src="js/commentCheck.js"></script>
+</html>
